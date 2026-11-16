@@ -61,7 +61,6 @@
     { key: "best_streak", label: "Killstreak" },
     { key: "finals_won", label: "Finals gewonnen" },
     { key: "kd", label: "K/D" },
-    { key: "finals_played", label: "Finals gespeeld" },
   ];
   const KD_MIN = 50;
   const statVal = (p, k) => k === "kd" ? (p.deaths ? p.kills / p.deaths : p.kills) : p[k] || 0;
@@ -249,7 +248,7 @@
         st.className = `rank-status${days <= 7 ? " soon" : ""}`;
         st.style.setProperty("--c", rk.color);
         st.innerHTML = `<span><b>${esc(rk.name)} actief</b> tot ${end.toLocaleDateString("nl-NL", { day: "numeric", month: "long" })}, nog ${days} ${days === 1 ? "dag" : "dagen"}.${days <= 7 ? " Verleng op tijd, hij loopt niet vanzelf door." : ""}</span>
-          ${rk.purchasable ? `<button type="button" data-extend="${esc(rk.id)}">Verleng 30 dagen</button>` : ""}`;
+          ${rk.purchasable && shopOpen ? `<button type="button" data-extend="${esc(rk.id)}">Verlengen</button>` : ""}`;
         $(".stats", box).before(st);
       }
     } catch {}
@@ -291,7 +290,17 @@
     el.hidden = false;
   }
 
+  // Links vanuit de game (/stats) of Discord: ?speler=Naam[&vs=Naam]
+  {
+    const q = new URLSearchParams(location.search);
+    if (q.get("speler")) {
+      const h = `#speler/${encodeURIComponent(q.get("speler"))}${q.get("vs") ? `/vs/${encodeURIComponent(q.get("vs"))}` : ""}`;
+      history.replaceState(null, "", location.pathname + h);
+    }
+  }
   function route() {
+    const t = location.hash.match(/^#speler\/([^/]+)/);
+    document.title = t ? `${decodeURIComponent(t[1])} – Bounty Practice` : "Bounty Practice – KitPvP & Finals";
     const m = location.hash.match(/^#speler\/([^/]+)(?:\/vs\/([^/]+))?$/);
     if (m && players.length) {
       showProfile(decodeURIComponent(m[1]), m[2] && decodeURIComponent(m[2]));
@@ -386,6 +395,17 @@
   addEventListener("hashchange", route);
 
   /* Ranks */
+  const price3 = (c) => Math.round((c * 3 * 0.85) / 10) * 10 - 1;
+  let shopOpen = true;
+  async function checkShop() {
+    try {
+      const r = await fetch(`${C.supabaseUrl}/functions/v1/bp-checkout`, { method: "POST", headers: { ...H, "Content-Type": "application/json" }, body: '{"ping":true}' });
+      shopOpen = !!(await r.json()).ready;
+    } catch { shopOpen = false; }
+    $("[data-shop-soon]").hidden = shopOpen;
+    $$("[data-buy-id]").forEach((b) => { b.disabled = !shopOpen; if (!shopOpen) b.textContent = "Binnenkort"; });
+    $$("[data-extend]").forEach((b) => (b.hidden = !shopOpen));
+  }
   async function loadRanks() {
     ranks = await rest("bp_ranks?select=*&order=sort");
     $("[data-ranks]").innerHTML = ranks.filter((r) => r.purchasable).map((r) => `
@@ -393,10 +413,29 @@
         <span class="tag">[${esc(r.name)}]</span>
         <p class="price">${euro(r.price_cents)}</p>
         <span class="per">per 30 dagen</span>
+        <span class="per3">${euro(price3(r.price_cents))} voor 90 dagen <em>-15%</em></span>
         <ul>${r.perks.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
         <button class="buy" data-buy-id="${esc(r.id)}">Kies ${esc(r.name)}</button>
       </article>`).join("");
     initPreview();
+    checkShop();
+    loadSupporters();
+  }
+
+  /* Supporters */
+  async function loadSupporters() {
+    try {
+      const list = await rpc("bp_supporters", {});
+      if (!list?.length) return;
+      const order = Object.fromEntries(ranks.map((r) => [r.id, r.sort]));
+      list.sort((a, b) => (order[b.rank_id] ?? 0) - (order[a.rank_id] ?? 0));
+      $("[data-supporters-list]").innerHTML = list.map((s) => {
+        const rk = ranks.find((r) => r.id === s.rank_id);
+        return `<li style="--c:${esc(rk?.color || "#888")}"><a href="#speler/${encodeURIComponent(s.mc_name)}" title="${esc(s.mc_name)} · ${esc(rk?.name || "")}">
+          <img src="${head(s.mc_name, 40)}" alt="" width="40" height="40" loading="lazy"><span>${esc(s.mc_name)}</span><small>${esc(rk?.name || "")}</small></a></li>`;
+      }).join("");
+      $("[data-supporters]").hidden = false;
+    } catch {}
   }
 
   /* Rank-preview: Minecraft-chat en tab met jouw naam */
@@ -447,13 +486,23 @@
     if (gift) mc.focus();
   }
   $("[data-for-pick]").addEventListener("click", (e) => { const x = e.target.closest("[data-for]"); if (x) setGift(x.dataset.for === "gift"); });
+  let months = 1;
+  function setTerm(m) {
+    months = m;
+    $$("[data-months]").forEach((b) => b.setAttribute("aria-checked", Number(b.dataset.months) === m));
+    const cents = m === 3 ? price3(buying.price_cents) : buying.price_cents;
+    $("[data-buy-price]").textContent = m === 3 ? `${euro(cents)} voor 90 dagen, je bespaart ${euro(buying.price_cents * 3 - cents)}` : `${euro(cents)} voor 30 dagen`;
+    $("[data-buy-go]").textContent = `Betaal ${euro(cents)}`;
+  }
+  $("[data-term-pick]").addEventListener("click", (e) => { const b = e.target.closest("[data-months]"); if (b) setTerm(Number(b.dataset.months)); });
   function openBuy(id, forName) {
     buying = ranks.find((r) => r.id === id);
     if (!buying) return;
     bf.style.setProperty("--c", buying.color);
     $("[data-buy-rank]").textContent = buying.name;
-    $("[data-buy-price]").textContent = `${euro(buying.price_cents)} voor 30 dagen`;
-    $("[data-buy-go]").textContent = `Betaal ${euro(buying.price_cents)}`;
+    $("[data-term1]").textContent = euro(buying.price_cents);
+    $("[data-term3]").textContent = euro(price3(buying.price_cents));
+    setTerm(1);
     setMsg(bmsg, "");
     setGift(false);
     if (forName) bf.elements.mc.value = forName;
@@ -470,7 +519,7 @@
     const go = $("[data-buy-go]");
     go.disabled = true; setMsg(bmsg, "Betaling klaarzetten…");
     try {
-      const r = await fetch(`${C.supabaseUrl}/functions/v1/bp-checkout`, { method: "POST", headers: { ...H, "Content-Type": "application/json" }, body: JSON.stringify({ mc_name: mc, rank_id: buying.id }) });
+      const r = await fetch(`${C.supabaseUrl}/functions/v1/bp-checkout`, { method: "POST", headers: { ...H, "Content-Type": "application/json" }, body: JSON.stringify({ mc_name: mc, rank_id: buying.id, months }) });
       const d = await r.json();
       if (d.checkout_url) { location.href = d.checkout_url; return; }
       setMsg(bmsg, d.error || "Er ging iets mis. Probeer het later opnieuw.", "bad");
@@ -518,6 +567,38 @@
     if (en.isIntersecting) tabLinks.forEach((l) => l.classList.toggle("on", l.getAttribute("href") === `#${en.target.id}`));
   }), { rootMargin: "-45% 0px -50% 0px" });
   ["spelen", "stats", "top10", "ranks"].forEach((id) => io.observe(document.getElementById(id)));
+
+  /* Volgend event met aftelklok + agenda-bestand */
+  async function loadEvent() {
+    try {
+      const [ev] = await rest(`bp_events?select=*&or=(ends_at.gt.${new Date().toISOString()},and(ends_at.is.null,starts_at.gt.${new Date(Date.now() - 3 * 3600e3).toISOString()}))&order=starts_at&limit=1`);
+      if (!ev) return;
+      const el = $("[data-event]");
+      const start = new Date(ev.starts_at);
+      const when = start.toLocaleString("nl-NL", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+      const tick = () => {
+        const ms = start - Date.now();
+        let left;
+        if (ms <= 0) left = `<b class="live">Nu live</b>`;
+        else {
+          const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, m = Math.floor(ms / 6e4) % 60;
+          left = `nog ${d ? `${d}d ` : ""}${h}u ${m}m`;
+        }
+        el.innerHTML = `<span class="event-k">Volgend event</span><b>${esc(ev.title)}</b><span>${when} · ${left}</span><span class="event-cal">Zet in agenda</span>`;
+      };
+      tick(); setInterval(tick, 30000);
+      const pad = (d) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
+      const end = ev.ends_at ? new Date(ev.ends_at) : new Date(start.getTime() + 2 * 36e5);
+      const ics = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Bounty Practice//NL", "BEGIN:VEVENT", `UID:${ev.id}@bountypractice`, `DTSTAMP:${pad(new Date())}`,
+        `DTSTART:${pad(start)}`, `DTEND:${pad(end)}`, `SUMMARY:Bounty Practice: ${ev.title}`, `LOCATION:${C.serverIp}`,
+        `DESCRIPTION:${(ev.description || "").replace(/\n/g, " ")} Server-IP: ${C.serverIp}`, "END:VEVENT", "END:VCALENDAR"].join("\r\n");
+      el.href = URL.createObjectURL(new Blob([ics], { type: "text/calendar" }));
+      el.download = "bounty-practice-event.ics";
+      el.title = ev.description || "";
+      el.hidden = false;
+    } catch {}
+  }
+  loadEvent();
 
   Promise.all([loadRanks(), loadPlayers()]).catch(() => {
     $("[data-board]").innerHTML = `<li class="empty">Stats laden lukt nu even niet. Ververs de pagina over een minuut.</li>`;

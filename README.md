@@ -32,13 +32,23 @@ Rank-id's (`donator`, `vip`, `hunter`, `legende`, `media`) zijn gelijk aan de Lu
 delete from bp_players where is_demo;
 ```
 
+## Events
+
+Tabel `bp_events` (title, description, starts_at, ends_at, active). Het eerstvolgende event staat in de hero met aftelklok en een "Zet in agenda"-knop (.ics). **Er staat nu een VOORBEELD-event (Finals-avond 21 nov 20:00): pas aan of verwijder in Supabase.**
+
+## Links vanuit de game
+
+`https://fabiannnyt.github.io/bounty-practice/?speler=<naam>` opent direct iemands profiel, `&vs=<naam>` opent een 1v1. Handig voor een `/stats`-commando in de KitPvP-plugin dat een klikbare link in chat zet.
+
 ## Mollie aanzetten
 
 1. Maak een Mollie-account (op jouw naam / KvK) en kopieer de **API-key** (eerst `test_...`, later `live_...`).
 2. Supabase dashboard → Edge Functions → Secrets → voeg toe:
    - `MOLLIE_API_KEY` = je Mollie-key
    - `SITE_URL` = `https://fabiannnyt.github.io/bounty-practice` (of je eigen domein later)
-3. Klaar. Zonder key toont de site netjes "Betalen is nog niet actief".
+3. Klaar.
+
+Zonder key toont de site "De winkel gaat binnenkort open" en staan de koopknoppen op "Binnenkort". Ranks zijn te koop voor 30 dagen of 90 dagen (-15%, kolom `months` in `bp_orders`).
 
 Flow: site → `bp-checkout` (maakt bestelling + Mollie-betaling) → Mollie → `bp-mollie-webhook` (zet `status = paid`, `expires_at = +30 dagen`, stapelt bij verlenging) → `bedankt.html`.
 

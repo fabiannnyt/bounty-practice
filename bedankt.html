@@ -17,13 +17,18 @@
     <img data-face width="96" height="96" alt="" hidden>
     <h1 data-title>Betaling controleren…</h1>
     <p data-text>Even geduld, we vragen de status op bij Mollie.</p>
-    <p><a class="btn" href="./" data-back>Terug naar de site</a></p>
+    <div class="next" data-next hidden>
+      <a class="btn" data-profile-link href="./">Bekijk je profiel</a>
+      <button class="btn-ghost" type="button" data-brag>Vertel het in Discord</button>
+    </div>
+    <p class="back"><a href="./" data-back>Terug naar de site</a></p>
   </div>
 </main>
 <script src="config.js"></script>
 <script>
 (async () => {
   const C = window.BP, H = { apikey: C.anonKey, Authorization: `Bearer ${C.anonKey}`, "Content-Type": "application/json" };
+  const rn = (id) => ({ donator: "Donateur", vip: "VIP", hunter: "Hunter", legende: "Legende" }[id] || id);
   const id = new URLSearchParams(location.search).get("order");
   const $ = (s) => document.querySelector(s);
   const set = (t, x) => { $("[data-title]").textContent = t; $("[data-text]").textContent = x; };
@@ -35,7 +40,16 @@
     const face = $("[data-face]"); face.src = `https://mc-heads.net/avatar/${encodeURIComponent(o.mc_name)}/96`; face.hidden = false;
     if (o.status === "paid") {
       const t = new Date(o.expires_at).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" });
-      return set("Betaling gelukt!", `${o.mc_name} krijgt de rank binnen een paar minuten in-game. Hij is geldig tot ${t}.`);
+      set("Betaling gelukt!", `${o.mc_name} krijgt ${rn(o.rank_id)} binnen een paar minuten in-game, ook als hij offline is. Geldig tot ${t}.`);
+      const next = $("[data-next]");
+      $("[data-profile-link]").href = `./#speler/${encodeURIComponent(o.mc_name)}`;
+      $("[data-brag]").onclick = async () => {
+        const txt = `${o.mc_name} heeft nu ${rn(o.rank_id)} op Bounty Practice! ${location.origin}${location.pathname.replace(/bedankt\.html$/, "")}?speler=${encodeURIComponent(o.mc_name)}`;
+        try { await navigator.clipboard.writeText(txt); } catch {}
+        $("[data-brag]").textContent = "Gekopieerd, plak het in Discord";
+      };
+      next.hidden = false;
+      return;
     }
     if (["failed", "canceled", "expired"].includes(o.status))
       return set("Betaling niet gelukt", "Er is niets afgeschreven. Je kunt het op de site opnieuw proberen.");

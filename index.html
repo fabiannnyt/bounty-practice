@@ -29,6 +29,7 @@
     <a href="#stats">Stats</a>
     <a href="#top10">Top 10</a>
     <a href="#ranks">Ranks</a>
+    <a href="#faq">Vragen</a>
   </nav>
   <a class="nav-discord" data-discord href="#" target="_blank" rel="noopener" aria-label="Discord">
     <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M20.3 4.4A19.6 19.6 0 0 0 15.4 3l-.6 1.3a18 18 0 0 0-5.5 0L8.7 3a19.6 19.6 0 0 0-4.9 1.5C.7 9.1-.2 13.6.3 18a19.8 19.8 0 0 0 6 3l1.3-2.1a12.8 12.8 0 0 1-2-1l.5-.4a14 14 0 0 0 12 0l.5.4-2 1 1.3 2.1a19.7 19.7 0 0 0 6-3c.6-5.1-.9-9.6-3.6-13.6ZM8 15.3c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.5 8 10.5s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>
@@ -46,6 +47,7 @@
         <span class="logo-main"><span class="ls">Bounty</span><span class="lf">Bounty</span></span>
         <span class="logo-sub"><span class="ls">Practice</span><span class="lf">Practice</span></span>
       </h1>
+      <a class="event" data-event hidden></a>
       <p class="lead">KitPvP en Finals van de Bounty SMP. Spring door een gat, pak je kit en vecht je naar de top.</p>
       <div class="cta">
         <button class="ip" type="button" data-copy-ip>
@@ -58,7 +60,7 @@
     </div>
 
     <figure class="podium" aria-label="Top 3 op punten">
-      <ol data-podium></ol>
+      <ol data-podium><li class="sk sk-pod"></li><li class="sk sk-pod"></li><li class="sk sk-pod"></li></ol>
       <figcaption>Top 3 op punten</figcaption>
     </figure>
   </section>
@@ -134,14 +136,14 @@
       </div>
       <div class="seg" role="tablist" aria-label="Kies een stat" data-tabs></div>
     </div>
-    <ol class="board" data-board aria-live="polite"></ol>
+    <ol class="board" data-board aria-live="polite"><li class="sk-row"><span class="sk"></span></li><li class="sk-row"><span class="sk"></span></li><li class="sk-row"><span class="sk"></span></li><li class="sk-row"><span class="sk"></span></li><li class="sk-row"><span class="sk"></span></li></ol>
     <p class="board-note" data-board-note></p>
   </section>
 
   <!-- Ranks -->
   <section class="section" id="ranks">
     <h2>Ranks</h2>
-    <p class="sub">Alleen cosmetisch, nooit pay-to-win. Een rank geldt 30 dagen en verlengt niet automatisch.</p>
+    <p class="sub">Alleen cosmetisch, nooit pay-to-win. Kies 30 of 90 dagen, er loopt geen abonnement.</p>
     <div class="preview">
       <div class="preview-ctl">
         <h3>Zo zie jij eruit</h3>
@@ -155,6 +157,7 @@
         <div class="mc-chat" data-pv-chat></div>
       </div>
     </div>
+    <p class="shop-soon" data-shop-soon hidden><b>De winkel gaat binnenkort open.</b> Je kunt de ranks alvast bekijken en uitproberen hierboven.</p>
     <div class="ranks" data-ranks></div>
 
     <div class="media-strip">
@@ -164,6 +167,33 @@
         <p>Vraag de gratis Media-rank aan: prefix, Winter Mace-look en /nick voor je video's en streams.</p>
       </div>
       <button class="btn-ghost" type="button" data-open-media>Media-rank aanvragen</button>
+    </div>
+
+    <div class="supporters" data-supporters hidden>
+      <h3>Bedankt, supporters</h3>
+      <p>Deze spelers houden de server draaiende met een rank.</p>
+      <ul data-supporters-list></ul>
+    </div>
+  </section>
+
+  <section class="section faq" id="faq">
+    <h2>Vragen</h2>
+    <div class="faq-list">
+      <details><summary>Is Bounty Practice pay-to-win?</summary><p>Nee. Ranks geven alleen cosmetische dingen zoals een prefix, kill-effecten en een andere mace-look. Kits, schade en punten zijn voor iedereen gelijk.</p></details>
+      <details><summary>Welke Minecraft-versie heb ik nodig?</summary><p>Minecraft Java Edition 26.2. Bedrock (telefoon, console) wordt niet ondersteund.</p></details>
+      <details><summary>Hoe snel krijg ik mijn rank na het betalen?</summary><p>Binnen een paar minuten, ook als je offline bent. Log in en je prefix staat er. Duurt het langer dan 15 minuten, stuur dan een bericht in de Discord.</p></details>
+      <details><summary>Verlengt mijn rank automatisch?</summary><p>Nee. Je betaalt één keer en de rank loopt 30 of 90 dagen. Op je profiel zie je hoeveel dagen je nog hebt en kun je verlengen. De extra dagen komen bovenop je huidige tijd.</p></details>
+      <details><summary>Kan ik een rank aan een vriend geven?</summary><p>Ja. Kies bij het kopen "Cadeau voor een vriend" en vul zijn Minecraft-naam in.</p></details>
+      <details><summary>Hoe worden mijn stats bijgehouden?</summary><p>De server houdt alles bij terwijl je speelt: kills, deaths, killstreaks, Finals en punten. De site ververst elke minuut.</p></details>
+    </div>
+  </section>
+
+  <section class="cta-band">
+    <h2>Zie je in de arena.</h2>
+    <p>Kopieer het IP, spring door een gat en kom op het bord.</p>
+    <div class="cta-band-btns">
+      <button class="ip" type="button" data-copy-ip><span class="ip-value" data-ip>play.bountypractice.nl</span><span class="ip-action">Kopieer IP</span></button>
+      <a class="btn-discord" data-discord href="#" target="_blank" rel="noopener">Join de Discord</a>
     </div>
   </section>
 
@@ -189,6 +219,10 @@
     <button class="x" value="cancel" aria-label="Sluiten" formnovalidate>×</button>
     <p class="sheet-kicker" data-buy-price></p>
     <h2 class="sheet-title" data-buy-rank></h2>
+    <div class="term-pick" data-term-pick role="radiogroup" aria-label="Looptijd">
+      <button type="button" role="radio" data-months="1" aria-checked="true"><b>30 dagen</b><span data-term1></span></button>
+      <button type="button" role="radio" data-months="3" aria-checked="false"><b>90 dagen</b><span data-term3></span><em>-15%</em></button>
+    </div>
     <div class="for-pick" data-for-pick role="radiogroup" aria-label="Voor wie">
       <button type="button" role="radio" data-for="me" aria-checked="true">Voor mezelf</button>
       <button type="button" role="radio" data-for="gift" aria-checked="false">Cadeau voor een vriend</button>
