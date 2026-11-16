@@ -1,6 +1,6 @@
 # Bounty Practice – website
 
-Promotiesite voor de Bounty Practice-server (KitPvP + Finals): stats zoeken, top 10 per stat, ranks kopen via Mollie en de Media-rank aanvragen.
+Promotiesite voor de Bounty Practice-server (KitPvP + Finals): top 3-podium, stats zoeken met "jouw doelwit" (wie je moet inhalen), top 10 per stat, ranks kopen via Mollie en de Media-rank aanvragen. De site onthoudt je naam (localStorage) en toont bij een volgend bezoek meteen je plek.
 
 - Draait op **GitHub Pages** (elke push naar `main` publiceert automatisch, zie `.github/workflows/pages.yml`).
 - Data en betalingen lopen via **Supabase** (project `bounty-takenbord`, tabellen met prefix `bp_`).
