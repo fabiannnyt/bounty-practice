@@ -100,3 +100,44 @@ PATCH bp_orders?id=eq.<id>   {"removed":true,"removed_at":"<nu>"}
 - Prijzen en perks checken in `bp_ranks`
 - Voorwaarden laten nakijken voordat de winkel live gaat
 - `og.png` (Discord-preview) opnieuw maken als er echte spelers in de top 3 staan
+
+## v4: plugin-koppelingen (nieuw)
+
+De site leest deze tabellen. De KitPvP-plugin moet ze vullen (service role key, REST zoals hierboven). Zolang ze leeg zijn, verbergt de site het onderdeel.
+
+| Tabel | Wat de plugin schrijft | Wanneer |
+| --- | --- | --- |
+| `bp_server` (1 rij, id=1) | `online`, `max_players`, `online_names[]`, `tps`, `updated_at` | elke 30 sec (ouder dan 2 min = site toont niks) |
+| `bp_stats_daily` | per speler per dag: kills, deaths, points, finals_won, finals_played, playtime_min (upsert op uuid+day) | samen met de stats-sync |
+| `bp_players.playtime_min` | totale speeltijd in minuten | samen met de stats-sync |
+| `bp_feed` | gebeurtenissen: `type` = streak / shutdown / finals / milestone / rank / gift / join, `actor`, `target`, `detail` | direct bij de gebeurtenis |
+| `bp_finals_matches` | na elke Finals-ronde: map, mode, winners[], players[], duration_s | einde ronde |
+| `bp_kits` | kits (naam, omschrijving, items[]) – nu met VOORBEELD-kits, vervang ze | bij kit aanpassen |
+| `bp_player_kits` | kills/deaths per speler per kit | stats-sync |
+| `bp_rivals` | per speler per tegenstander: kills_on, deaths_by | stats-sync |
+| `bp_bounties` | spelers op een streak (target, streak, reward); verwijderen als de streak eindigt | live |
+| `bp_challenges` | uitdaging per dag (ook via beheer); plugin checkt en geeft punten | dagelijks |
+| `bp_votes` | elke stem (Votifier): name, site | bij elke stem |
+| `bp_orders.gift_from` + `announced` | plugin roept "X gaf Y VIP!" om en zet `announced = true` | bij uitdelen |
+
+In-game commando's die de site noemt: `/ref <naam>` (beide 100 punten), `/stats` (stuurt `?speler=<naam>`-link).
+
+## Beheer (`admin.html`)
+
+Wachtwoord = Edge Function-secret `BP_ADMIN_PASSWORD`. Daar beheer je media-aanvragen, meldingen, events, nieuws, uitdagingen, creator-codes (met omzet), team, bestellingen en bezoekersaantallen.
+
+## Stream-overlay
+
+`obs.html?speler=<naam>` → in OBS als Browserbron (420×110, transparant). Ververst elke 15 sec.
+
+## Demo-data opruimen (vóór livegang)
+
+```sql
+delete from bp_players where is_demo;      delete from bp_stats_daily where is_demo;
+delete from bp_feed where is_demo;         delete from bp_finals_matches where is_demo;
+delete from bp_player_kits where is_demo;  delete from bp_rivals where is_demo;
+delete from bp_bounties where is_demo;     delete from bp_votes where is_demo;
+delete from bp_challenges;                 delete from bp_events;   -- voorbeeld-event
+update bp_server set online = 0, online_names = '{}';
+-- bp_kits: vervang door je echte kits. bp_coupons: code FABIANNN (10%) is een voorbeeld.
+```

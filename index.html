@@ -2,67 +2,79 @@
 <html lang="nl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Bounty Practice – KitPvP & Finals</title>
-<meta name="description" content="Bounty Practice: de KitPvP- en Finals-server van Bounty SMP. Bekijk je stats, de top 10 en steun de server met een rank.">
+<meta name="description" content="Bounty Practice: de KitPvP- en Finals-server van Bounty SMP. Bekijk je stats, de ranglijst, Finals-uitslagen en steun de server met een rank.">
 <meta name="theme-color" content="#0e0a09">
 <meta property="og:title" content="Bounty Practice – KitPvP & Finals">
 <meta property="og:description" content="Check je stats, zie wie je moet inhalen en join de arena.">
 <meta property="og:image" content="https://fabiannnyt.github.io/bounty-practice/og.png">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="favicon.png">
+<link rel="canonical" href="https://fabiannnyt.github.io/bounty-practice/">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://ekioqxtazurafzyrnbxb.supabase.co" crossorigin>
+<link rel="preconnect" href="https://mc-heads.net">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap">
 <link rel="stylesheet" href="style.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Bounty Practice","url":"https://fabiannnyt.github.io/bounty-practice/","inLanguage":"nl","description":"KitPvP- en Finals-server van de Bounty SMP"}</script>
 </head>
-<body>
+<body data-page="home">
+<a class="skip" href="#main">Naar de inhoud</a>
+<header class="nav"></header>
 
-<header class="nav">
-  <a class="nav-brand" href="#top" aria-label="Bounty Practice, naar boven">
-    <span class="wordmark"><span class="ls">Bounty</span><span class="lf">Bounty</span></span>
-    <span class="nav-sub">Practice</span>
-  </a>
-  <nav class="nav-links" aria-label="Hoofdmenu">
-    <a href="#spelen">Spelen</a>
-    <a href="#stats">Stats</a>
-    <a href="#top10">Top 10</a>
-    <a href="#ranks">Ranks</a>
-    <a href="#faq">Vragen</a>
-  </nav>
-  <a class="nav-discord" data-discord href="#" target="_blank" rel="noopener" aria-label="Discord">
-    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M20.3 4.4A19.6 19.6 0 0 0 15.4 3l-.6 1.3a18 18 0 0 0-5.5 0L8.7 3a19.6 19.6 0 0 0-4.9 1.5C.7 9.1-.2 13.6.3 18a19.8 19.8 0 0 0 6 3l1.3-2.1a12.8 12.8 0 0 1-2-1l.5-.4a14 14 0 0 0 12 0l.5.4-2 1 1.3 2.1a19.7 19.7 0 0 0 6-3c.6-5.1-.9-9.6-3.6-13.6ZM8 15.3c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.5 8 10.5s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>
-  </a>
-  <button class="nav-play" type="button" data-copy-ip>Speel nu</button>
-</header>
-
-<main id="top">
+<main id="main">
+<div id="home">
 
   <!-- Hero -->
   <section class="hero">
     <div class="hero-copy">
       <a class="welcome" data-welcome href="#stats" hidden></a>
       <h1 class="logo" aria-label="Bounty Practice">
-        <span class="logo-main"><span class="ls">Bounty</span><span class="lf">Bounty</span></span>
-        <span class="logo-sub"><span class="ls">Practice</span><span class="lf">Practice</span></span>
+        <span class="logo-main" aria-hidden="true"><span class="ls">Bounty</span><span class="lf">Bounty</span></span>
+        <span class="logo-sub" aria-hidden="true"><span class="ls">Practice</span><span class="lf">Practice</span></span>
       </h1>
       <a class="event" data-event hidden></a>
       <p class="lead">KitPvP en Finals van de Bounty SMP. Spring door een gat, pak je kit en vecht je naar de top.</p>
       <div class="cta">
         <button class="ip" type="button" data-copy-ip>
           <span class="ip-value" data-ip>play.bountypractice.nl</span>
-          <span class="ip-action" data-ip-hint>Kopieer IP</span>
+          <span class="ip-action">Kopieer IP</span>
         </button>
-        <a class="link-discord" data-discord href="#" target="_blank" rel="noopener">Join de Discord</a>
+        <a class="link-discord" data-discord href="#" target="_blank" rel="noopener">Join de Discord<span data-discord-count></span></a>
       </div>
-      <p class="meta"><span class="online" data-online hidden><i></i><span></span> ·</span> <span data-today hidden></span> Java Edition 26.2</p>
+      <p class="meta"><span data-live-meta></span>Java Edition 26.2</p>
     </div>
-
     <figure class="podium" aria-label="Top 3 op punten">
       <ol data-podium><li class="sk sk-pod"></li><li class="sk sk-pod"></li><li class="sk sk-pod"></li></ol>
       <figcaption>Top 3 op punten</figcaption>
     </figure>
+  </section>
+
+  <!-- Nu op de server -->
+  <section class="section live" id="live">
+    <h2>Nu op de server</h2>
+    <p class="sub">Wat er net gebeurde, wie er gezocht wordt en wat je vandaag kunt verdienen.</p>
+    <div class="live-grid">
+      <div class="panel feed-panel">
+        <h3><i class="pulse" aria-hidden="true"></i>Live</h3>
+        <ol class="feed" data-feed><li class="sk-row"><span class="sk"></span></li><li class="sk-row"><span class="sk"></span></li><li class="sk-row"><span class="sk"></span></li></ol>
+      </div>
+      <div class="panel wanted-panel">
+        <h3>Gezocht</h3>
+        <p class="panel-sub">Spelers op een killstreak. Stop ze en pak de beloning.</p>
+        <ol class="wanted" data-wanted></ol>
+      </div>
+      <div class="panel challenge-panel" data-challenge>
+        <h3>Uitdaging van vandaag</h3>
+        <p class="challenge-text" data-challenge-text>–</p>
+        <p class="challenge-meta"><b data-challenge-reward></b><span data-challenge-left></span></p>
+      </div>
+    </div>
   </section>
 
   <!-- Modi -->
@@ -71,10 +83,7 @@
     <p class="sub">Twee modi, één puntenteller. Alles wat je verdient in KitPvP telt ook mee in Finals.</p>
     <div class="modes">
       <article class="mode mode-kit">
-        <div class="mode-top">
-          <h3>KitPvP</h3>
-          <p class="mode-live"><b data-total-kills>–</b> kills op de server</p>
-        </div>
+        <div class="mode-top"><h3>KitPvP</h3><p class="mode-live" hidden><b data-total-kills>–</b> kills op de server</p></div>
         <p class="mode-lead">Altijd open, altijd actie. Kies een gat in de lobby en val met je kit de arena in.</p>
         <ul>
           <li><b>Gaten in de lobby</b><span>Elk gat geeft een andere kit. Spring erin en je bent meteen in gevecht.</span></li>
@@ -82,16 +91,9 @@
           <li><b>Jouw indeling</b><span>Zet je items één keer goed in de layout-shulker, de rest van de tijd liggen ze daar.</span></li>
           <li><b>Killstreaks</b><span>Bonuspunten bij 3, 5, 7 en 10 kills op rij, en extra voor wie een streak breekt.</span></li>
         </ul>
-        <div class="kits" data-kits hidden>
-          <p>Favoriete kits van de spelers</p>
-          <ol></ol>
-        </div>
       </article>
       <article class="mode mode-fin">
-        <div class="mode-top">
-          <h3>Finals</h3>
-          <p class="mode-live"><b data-total-wins>–</b> Finals gewonnen</p>
-        </div>
+        <div class="mode-top"><h3>Finals</h3><p class="mode-live" hidden><b data-total-wins>–</b> Finals gewonnen</p></div>
         <p class="mode-lead">Rondes op een nieuwe map. Laatste speler of laatste team wint.</p>
         <ul>
           <li><b>Eerlijke teams</b><span>Free-for-all bij weinig spelers, daarna teams die automatisch eerlijk worden verdeeld.</span></li>
@@ -102,6 +104,11 @@
       </article>
     </div>
 
+    <div class="kits-block" id="kits" data-kits hidden>
+      <div class="section-row"><h3>De kits</h3><p class="sub-sm">Met kills en hoe vaak spelers hem als favoriet hebben.</p></div>
+      <div class="kit-grid" data-kit-grid></div>
+    </div>
+
     <div class="join">
       <h3>In drie stappen in de arena</h3>
       <ol>
@@ -109,10 +116,18 @@
         <li><b>Voeg de server toe</b><span>Open Minecraft Java 26.2, ga naar Multiplayer en kies Server toevoegen.</span></li>
         <li><b>Spring in een gat</b><span>Je komt in de lobby. Kies een gat, val erdoor en je zit in de arena.</span></li>
       </ol>
+      <p class="refer"><b>Neem een vriend mee.</b> Laat hem bij zijn eerste keer <code>/ref jouwnaam</code> typen. Jullie krijgen allebei 100 punten.</p>
     </div>
   </section>
 
-  <!-- Stats -->
+  <!-- Finals-uitslagen -->
+  <section class="section" id="finals" data-finals-section hidden>
+    <h2>Laatste Finals</h2>
+    <p class="sub">De winnaars van de laatste rondes.</p>
+    <ol class="matches" data-matches></ol>
+  </section>
+
+  <!-- Stats zoeken -->
   <section class="section" id="stats">
     <h2>Jouw stats</h2>
     <p class="sub">Typ je Minecraft-naam en zie hoe je ervoor staat.</p>
@@ -120,11 +135,10 @@
       <label class="sr" for="q">Minecraft-naam</label>
       <img class="search-face" data-search-face src="https://mc-heads.net/avatar/MHF_Steve/48" alt="" width="36" height="36">
       <input id="q" name="q" autocomplete="off" spellcheck="false" maxlength="16" placeholder="Minecraft-naam" role="combobox" aria-controls="suggest" aria-expanded="false" aria-autocomplete="list">
-      <datalist id="names"></datalist>
       <button type="submit">Zoeken</button>
       <ul class="suggest" id="suggest" role="listbox" data-suggest hidden></ul>
     </form>
-    <div class="profile" data-profile hidden></div>
+    <p class="chips" data-chips hidden></p>
   </section>
 
   <!-- Top 10 -->
@@ -134,16 +148,34 @@
         <h2>Top 10</h2>
         <p class="sub">Wie domineert de arena.</p>
       </div>
-      <div class="seg" role="tablist" aria-label="Kies een stat" data-tabs></div>
+      <div class="board-ctl">
+        <div class="seg seg-sm" role="tablist" aria-label="Periode" data-periods></div>
+        <div class="seg" role="tablist" aria-label="Kies een stat" data-tabs></div>
+      </div>
     </div>
-    <ol class="board" data-board aria-live="polite"><li class="sk-row"><span class="sk"></span></li><li class="sk-row"><span class="sk"></span></li><li class="sk-row"><span class="sk"></span></li><li class="sk-row"><span class="sk"></span></li><li class="sk-row"><span class="sk"></span></li></ol>
-    <p class="board-note" data-board-note></p>
+    <div class="top-grid">
+      <div>
+        <ol class="board" data-board aria-live="polite"><li class="sk-row"><span class="sk"></span></li><li class="sk-row"><span class="sk"></span></li><li class="sk-row"><span class="sk"></span></li><li class="sk-row"><span class="sk"></span></li></ol>
+        <p class="board-note" data-board-note></p>
+        <a class="more" href="ranglijst.html">Volledige ranglijst bekijken</a>
+      </div>
+      <aside class="side">
+        <a class="potw" data-potw hidden></a>
+        <div class="records" data-records></div>
+      </aside>
+    </div>
   </section>
 
   <!-- Ranks -->
   <section class="section" id="ranks">
     <h2>Ranks</h2>
     <p class="sub">Alleen cosmetisch, nooit pay-to-win. Kies 30 of 90 dagen, er loopt geen abonnement.</p>
+
+    <div class="goal" data-goal hidden>
+      <div class="goal-top"><b data-goal-label></b><span data-goal-text></span></div>
+      <span class="goal-bar"><i data-goal-bar></i></span>
+    </div>
+
     <div class="preview">
       <div class="preview-ctl">
         <h3>Zo zie jij eruit</h3>
@@ -160,13 +192,26 @@
     <p class="shop-soon" data-shop-soon hidden><b>De winkel gaat binnenkort open.</b> Je kunt de ranks alvast bekijken en uitproberen hierboven.</p>
     <div class="ranks" data-ranks></div>
 
+    <details class="compare" data-compare>
+      <summary>Vergelijk alle ranks</summary>
+      <div class="compare-wrap"><table data-compare-table></table></div>
+    </details>
+
+    <p class="effects"><b>Kill-effecten in de game:</b> <span>Grafsteen</span><span>Draak</span><span>IJs</span><span>Meteoor</span><span>Zwart gat</span><span>Disco</span><span>en meer</span></p>
+
     <div class="media-strip">
       <span class="media-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M8 5.5v13l10.5-6.5z"/></svg></span>
       <div>
         <h3>Maak je content op Bounty Practice?</h3>
-        <p>Vraag de gratis Media-rank aan: prefix, Winter Mace-look en /nick voor je video's en streams.</p>
+        <p>Vraag de gratis Media-rank aan: prefix, Winter Mace-look, /nick en een eigen creator-code.</p>
       </div>
       <button class="btn-ghost" type="button" data-open-media>Media-rank aanvragen</button>
+    </div>
+
+    <div class="creators" data-creators hidden>
+      <h3>Content creators</h3>
+      <p>Zij maken video's en streams op Bounty Practice. Gebruik hun code bij het kopen en steun ze.</p>
+      <ul data-creators-list></ul>
     </div>
 
     <div class="supporters" data-supporters hidden>
@@ -176,6 +221,21 @@
     </div>
   </section>
 
+  <!-- Nieuws + agenda -->
+  <section class="section" id="nieuws" data-news-section hidden>
+    <div class="news-grid">
+      <div>
+        <h2>Nieuws</h2>
+        <div class="news" data-news></div>
+      </div>
+      <div data-agenda-wrap hidden>
+        <h2>Agenda</h2>
+        <ol class="agenda" data-agenda></ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Vragen -->
   <section class="section faq" id="faq">
     <h2>Vragen</h2>
     <div class="faq-list">
@@ -183,8 +243,9 @@
       <details><summary>Welke Minecraft-versie heb ik nodig?</summary><p>Minecraft Java Edition 26.2. Bedrock (telefoon, console) wordt niet ondersteund.</p></details>
       <details><summary>Hoe snel krijg ik mijn rank na het betalen?</summary><p>Binnen een paar minuten, ook als je offline bent. Log in en je prefix staat er. Duurt het langer dan 15 minuten, stuur dan een bericht in de Discord.</p></details>
       <details><summary>Verlengt mijn rank automatisch?</summary><p>Nee. Je betaalt één keer en de rank loopt 30 of 90 dagen. Op je profiel zie je hoeveel dagen je nog hebt en kun je verlengen. De extra dagen komen bovenop je huidige tijd.</p></details>
-      <details><summary>Kan ik een rank aan een vriend geven?</summary><p>Ja. Kies bij het kopen "Cadeau voor een vriend" en vul zijn Minecraft-naam in.</p></details>
-      <details><summary>Hoe worden mijn stats bijgehouden?</summary><p>De server houdt alles bij terwijl je speelt: kills, deaths, killstreaks, Finals en punten. De site ververst elke minuut.</p></details>
+      <details><summary>Kan ik een rank aan een vriend geven?</summary><p>Ja. Kies bij het kopen "Cadeau voor een vriend". Vul je eigen naam in als je wilt dat de server laat zien van wie het cadeau komt.</p></details>
+      <details><summary>Wat is een creator-code?</summary><p>Elke content creator met de Media-rank heeft een eigen code. Gebruik je die bij het kopen, dan krijg je korting en ziet de creator dat jij hem steunt.</p></details>
+      <details><summary>Iemand speelt vals. Wat nu?</summary><p>Meld hem op de <a href="regels.html#melden">regels-pagina</a>. Het team kijkt elke melding na.</p></details>
     </div>
   </section>
 
@@ -196,22 +257,18 @@
       <a class="btn-discord" data-discord href="#" target="_blank" rel="noopener">Join de Discord</a>
     </div>
   </section>
+</div>
 
+<!-- Profiel als eigen pagina -->
+<div id="profile-view" hidden>
+  <section class="section profile-page">
+    <a class="back" href="./#stats">Terug</a>
+    <div class="profile" data-profile></div>
+  </section>
+</div>
 </main>
 
-<footer class="foot">
-  <span>Bounty Practice hoort bij de Bounty SMP. Niet verbonden aan Mojang of Microsoft.</span>
-  <span><a data-discord href="#" target="_blank" rel="noopener">Discord</a><a href="voorwaarden.html">Voorwaarden</a></span>
-</footer>
-
-<nav class="tabbar" aria-label="Snel naar">
-  <a href="#spelen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l12 8-12 8z"/></svg>Spelen</a>
-  <a href="#stats"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>Stats</a>
-  <a href="#top10"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V11M10 20V5M16 20v-6M22 20H2"/></svg>Top 10</a>
-  <a href="#ranks"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l4 4 5-7 5 7 4-4-2 11H5z"/></svg>Ranks</a>
-</nav>
-
-<div class="toast" data-toast role="status" aria-live="polite"></div>
+<footer class="foot"></footer>
 
 <!-- Kopen -->
 <dialog class="sheet" data-buy>
@@ -233,11 +290,21 @@
         <input name="mc" required maxlength="16" pattern="[A-Za-z0-9_]{3,16}" autocomplete="off" spellcheck="false" placeholder="Op deze naam komt de rank">
       </span>
     </label>
+    <label class="field" data-gift-from hidden>Van (jouw naam, optioneel)
+      <input name="from" maxlength="16" autocomplete="off" spellcheck="false" placeholder="De server laat zien dat het van jou komt">
+    </label>
     <p class="gift-note" data-gift-note hidden>De rank komt direct op de naam van je vriend. Check de spelling goed.</p>
+    <div class="coupon">
+      <label class="field">Creator-code (optioneel)
+        <span class="field-row"><input name="coupon" maxlength="24" autocomplete="off" spellcheck="false" placeholder="Bijv. de code van je favoriete streamer"><button type="button" class="btn-ghost sm" data-coupon-check>Toepassen</button></span>
+      </label>
+      <p class="msg" data-coupon-msg></p>
+    </div>
     <label class="check"><input type="checkbox" name="ok" required> Ik ga akkoord met de <a href="voorwaarden.html" target="_blank">voorwaarden</a></label>
     <button class="btn" type="submit" value="pay" data-buy-go>Betalen</button>
     <p class="msg" data-buy-msg role="status"></p>
-    <p class="fine">Veilig betalen via Mollie met iDEAL, Bancontact, creditcard of PayPal. Je rank staat binnen een paar minuten klaar in-game.</p>
+    <p class="paymethods" aria-label="Betaalmethodes"><span>iDEAL</span><span>Bancontact</span><span>PayPal</span><span>Creditcard</span></p>
+    <p class="fine">Veilig betalen via Mollie. Je rank staat binnen een paar minuten klaar in-game.</p>
   </form>
 </dialog>
 
@@ -263,6 +330,7 @@
 </dialog>
 
 <script src="config.js"></script>
+<script src="common.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

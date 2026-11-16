@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /bounty-practice/admin.html
+Disallow: /bounty-practice/obs.html
+Sitemap: https://fabiannnyt.github.io/bounty-practice/sitemap.xml

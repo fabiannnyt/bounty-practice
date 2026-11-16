@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Regels – Bounty Practice</title>
+<meta name="description" content="De regels van Bounty Practice, een speler melden en het team.">
+<meta name="theme-color" content="#0e0a09">
+<meta property="og:title" content="Regels – Bounty Practice">
+<meta property="og:image" content="https://fabiannnyt.github.io/bounty-practice/og.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://ekioqxtazurafzyrnbxb.supabase.co" crossorigin>
+<link rel="preconnect" href="https://mc-heads.net">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-page="regels">
+<a class="skip" href="#main">Naar de inhoud</a>
+<header class="nav"></header>
+<main id="main" class="subpage">
+
+<section class="section">
+  <h1 class="page-h">Regels</h1>
+  <p class="sub">Kort en duidelijk. Wie zich er niet aan houdt, krijgt een waarschuwing, een tijdelijke ban of een permanente ban.</p>
+  <ol class="rules">
+    <li><b>Geen cheats of hacked clients.</b><span>Ook geen x-ray, autoclickers, macro's of reach-mods. Toegestane mods: performance-mods en minimaps zonder spelers op de kaart.</span></li>
+    <li><b>Niet teamen in free-for-all.</b><span>In FFA-rondes van Finals vecht iedereen voor zichzelf.</span></li>
+    <li><b>Niet combat loggen.</b><span>Uitloggen of /lobby tijdens een gevecht telt als een dood.</span></li>
+    <li><b>Geen bugs misbruiken.</b><span>Gevonden? Meld hem in de Discord, dan krijg je een beloning.</span></li>
+    <li><b>Respect voor iedereen.</b><span>Geen schelden, discriminatie, spammen of reclame voor andere servers.</span></li>
+    <li><b>Ranks blijven cosmetisch.</b><span>Een rank geeft geen recht op voorrang of uitzonderingen op deze regels.</span></li>
+  </ol>
+</section>
+<section class="section" id="melden">
+  <h2>Speler melden</h2>
+  <p class="sub">Zie je iemand de regels breken? Meld het hier. Het team kijkt elke melding na. Heb je een clip, zet de link in de toelichting.</p>
+  <form class="report" data-report novalidate>
+    <div class="two">
+      <label class="field">Jouw Minecraft-naam<input name="reporter" required maxlength="16" autocomplete="off"></label>
+      <label class="field">Wie meld je?<input name="target" required maxlength="16" autocomplete="off"></label>
+    </div>
+    <label class="field">Reden
+      <select name="reason"><option>Cheats</option><option>Teamen in FFA</option><option>Combat loggen</option><option>Schelden of pesten</option><option>Bug misbruiken</option><option>Anders</option></select>
+    </label>
+    <label class="field">Toelichting<textarea name="details" rows="3" maxlength="1000" placeholder="Wanneer was het, wat gebeurde er? Link naar een clip helpt veel."></textarea></label>
+    <button class="btn" type="submit">Melding versturen</button>
+    <p class="msg" data-report-msg role="status"></p>
+  </form>
+</section>
+<section class="section" id="team" data-team-section hidden>
+  <h2>Het team</h2>
+  <p class="sub">Vragen of problemen? Stuur een van ons een bericht in de Discord.</p>
+  <ul class="team" data-team></ul>
+</section></main>
+<footer class="foot"></footer>
+<script src="config.js"></script>
+<script src="common.js"></script>
+<script src="regels.js"></script>
+</body>
+</html>
