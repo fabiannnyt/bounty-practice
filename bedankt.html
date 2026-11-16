@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Betaling – Bounty Practice</title>
+<link rel="icon" href="favicon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="nav">
+  <a class="nav-brand" href="./"><span class="mini-logo">Bounty<small>Practice</small></span></a>
+</header>
+<main class="page">
+  <div class="result" data-result>
+    <img data-face width="96" height="96" alt="" hidden>
+    <h1 data-title>Betaling controleren…</h1>
+    <p data-text>Even geduld, we vragen de status op bij Mollie.</p>
+    <p><a class="btn btn-red" href="./" data-back>Terug naar de site</a></p>
+  </div>
+</main>
+<script src="config.js"></script>
+<script>
+(async () => {
+  const C = window.BP, H = { apikey: C.anonKey, Authorization: `Bearer ${C.anonKey}`, "Content-Type": "application/json" };
+  const id = new URLSearchParams(location.search).get("order");
+  const $ = (s) => document.querySelector(s);
+  const set = (t, x) => { $("[data-title]").textContent = t; $("[data-text]").textContent = x; };
+  if (!id) return set("Geen bestelling gevonden", "Deze link mist een bestelnummer. Ga terug naar de site en probeer opnieuw.");
+  for (let i = 0; i < 10; i++) {
+    const r = await fetch(`${C.supabaseUrl}/rest/v1/rpc/bp_order_status`, { method: "POST", headers: H, body: JSON.stringify({ p_id: id }) });
+    const o = (await r.json())?.[0];
+    if (!o) return set("Bestelling niet gevonden", "Neem contact op via Discord als je wel hebt betaald.");
+    const face = $("[data-face]"); face.src = `https://mc-heads.net/avatar/${encodeURIComponent(o.mc_name)}/96`; face.hidden = false;
+    if (o.status === "paid") {
+      const t = new Date(o.expires_at).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" });
+      return set("Betaling gelukt!", `${o.mc_name} krijgt de rank binnen een paar minuten in-game. Hij is geldig tot ${t}.`);
+    }
+    if (["failed", "canceled", "expired"].includes(o.status))
+      return set("Betaling niet gelukt", "Er is niets afgeschreven. Je kunt het op de site opnieuw proberen.");
+    set("Betaling controleren…", "Mollie verwerkt je betaling nog. Deze pagina ververst vanzelf.");
+    await new Promise((r) => setTimeout(r, 3000));
+  }
+  set("Betaling wordt nog verwerkt", "Dit duurt soms even. Je rank komt vanzelf in-game zodra de betaling binnen is.");
+})();
+</script>
+</body>
+</html>

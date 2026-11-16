@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bounty Practice – KitPvP & Finals</title>
+<meta name="description" content="Bounty Practice: de KitPvP- en Finals-server van Bounty SMP. Bekijk je stats, de top 10 en steun de server met een rank.">
+<link rel="icon" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="nav">
+  <a class="nav-brand" href="#top" aria-label="Bounty Practice, naar boven">
+    <span class="mini-logo">Bounty<small>Practice</small></span>
+  </a>
+  <nav class="nav-links" aria-label="Hoofdmenu">
+    <a href="#stats">Stats</a>
+    <a href="#top10">Top 10</a>
+    <a href="#ranks">Ranks</a>
+    <a href="#media">Media</a>
+  </nav>
+  <a class="btn btn-discord" data-discord href="#" target="_blank" rel="noopener">Discord</a>
+</header>
+
+<main id="top">
+
+  <!-- ===== Hero ===== -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1 class="logo" aria-label="Bounty Practice">
+        <span class="logo-main"><span class="ls">Bounty</span><span class="lf">Bounty</span></span>
+        <span class="logo-sub"><span class="ls">Practice</span><span class="lf">Practice</span></span>
+      </h1>
+      <p class="lead">KitPvP en Finals van Bounty SMP. Kies een kit, spring in de arena en jaag op de bovenste plek van het bord.</p>
+
+      <div class="ip-row">
+        <button class="ip" type="button" data-copy-ip>
+          <span class="ip-label">Server-IP</span>
+          <span class="ip-value" data-ip>play.bountypractice.nl</span>
+          <span class="ip-hint" data-ip-hint>Klik om te kopiëren</span>
+        </button>
+        <div class="online" data-online hidden><i></i><span></span></div>
+      </div>
+      <p class="version">Java Edition · Minecraft 26.2</p>
+    </div>
+
+    <!-- Gezocht-poster: de nummer 1 op punten -->
+    <a class="poster" href="#stats" data-poster aria-label="Nummer 1 op punten">
+      <span class="poster-pin" aria-hidden="true"></span>
+      <span class="poster-title">Gezocht</span>
+      <img class="poster-face" data-poster-face alt="" width="160" height="160">
+      <span class="poster-name" data-poster-name>…</span>
+      <span class="poster-why">Meeste punten op de server</span>
+      <span class="poster-reward"><b data-poster-points>–</b> punten</span>
+    </a>
+  </section>
+
+  <!-- ===== Stats zoeken ===== -->
+  <section class="block" id="stats">
+    <div class="block-head">
+      <h2>Jouw stats</h2>
+      <p>Zoek op Minecraft-naam. Stats worden bijgewerkt terwijl je speelt.</p>
+    </div>
+    <form class="search" data-search role="search">
+      <label class="sr" for="q">Minecraft-naam</label>
+      <img class="search-face" data-search-face src="https://mc-heads.net/avatar/MHF_Steve/48" alt="" width="40" height="40">
+      <input id="q" name="q" autocomplete="off" spellcheck="false" maxlength="16" placeholder="Minecraft-naam, bijv. FabiannnYT" list="names">
+      <datalist id="names"></datalist>
+      <button class="btn btn-red" type="submit">Zoeken</button>
+    </form>
+    <div class="profile" data-profile hidden></div>
+  </section>
+
+  <!-- ===== Top 10 ===== -->
+  <section class="block" id="top10">
+    <div class="block-head">
+      <h2>Top 10</h2>
+      <p>De beste spelers per stat.</p>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Kies een stat" data-tabs></div>
+    <ol class="board" data-board aria-live="polite"></ol>
+  </section>
+
+  <!-- ===== Ranks ===== -->
+  <section class="block" id="ranks">
+    <div class="block-head">
+      <h2>Ranks</h2>
+      <p>Alle ranks zijn puur cosmetisch: je wint er geen gevecht mee. Een rank geldt 30 dagen en verlengt niet automatisch.</p>
+    </div>
+    <div class="ranks" data-ranks></div>
+  </section>
+
+  <!-- ===== Media ===== -->
+  <section class="block media" id="media">
+    <div class="block-head">
+      <h2>Media-rank aanvragen</h2>
+      <p>Stream of maak je video's op Bounty Practice? Vraag de gratis Media-rank aan. Het team bekijkt je aanvraag en laat via Discord weten of je hem krijgt.</p>
+    </div>
+    <form class="form" data-media novalidate>
+      <div class="row">
+        <label>Minecraft-naam<input name="mc_name" required maxlength="16" pattern="[A-Za-z0-9_]{3,16}" autocomplete="off"></label>
+        <label>Platform
+          <select name="platform" required>
+            <option>Twitch</option><option>YouTube</option><option>TikTok</option><option>Kick</option><option>Anders</option>
+          </select>
+        </label>
+      </div>
+      <div class="row">
+        <label>Link naar je kanaal<input name="channel_url" type="url" required placeholder="https://twitch.tv/…"></label>
+        <label>Volgers / abonnees<input name="followers" maxlength="40" placeholder="bijv. 1.200"></label>
+      </div>
+      <label>Discord-naam<input name="discord" maxlength="60" placeholder="Zodat we je kunnen bereiken"></label>
+      <label>Wat ga je op de server maken?<textarea name="motivation" rows="4" maxlength="1500" placeholder="Vertel kort wat voor content je wilt maken."></textarea></label>
+      <div class="form-foot">
+        <button class="btn btn-red" type="submit">Aanvraag versturen</button>
+        <p class="form-msg" data-media-msg role="status"></p>
+      </div>
+    </form>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <p>Bounty Practice hoort bij Bounty SMP. Niet verbonden aan Mojang of Microsoft.</p>
+  <p><a data-discord href="#" target="_blank" rel="noopener">Discord</a> · <a href="voorwaarden.html">Voorwaarden</a></p>
+</footer>
+
+<!-- Koop-venster -->
+<dialog class="buy" data-buy>
+  <form method="dialog" class="buy-inner" data-buy-form>
+    <button class="x" value="cancel" aria-label="Sluiten" formnovalidate>×</button>
+    <p class="buy-rank" data-buy-rank></p>
+    <p class="buy-price" data-buy-price></p>
+    <label>Je Minecraft-naam
+      <input name="mc" required maxlength="16" pattern="[A-Za-z0-9_]{3,16}" autocomplete="off" spellcheck="false">
+    </label>
+    <img class="buy-face" data-buy-face alt="" width="64" height="64">
+    <label class="check"><input type="checkbox" name="ok" required> Ik ga akkoord met de <a href="voorwaarden.html" target="_blank">voorwaarden</a></label>
+    <button class="btn btn-red wide" type="submit" value="pay" data-buy-go>Betalen</button>
+    <p class="form-msg" data-buy-msg role="status"></p>
+    <p class="buy-note">Je betaalt veilig via Mollie (iDEAL, Bancontact, creditcard of PayPal). Je rank komt binnen een paar minuten in-game.</p>
+  </form>
+</dialog>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
