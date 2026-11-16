@@ -89,3 +89,4 @@ PATCH bp_orders?id=eq.<id>   {"removed":true,"removed_at":"<nu>"}
 - Originele logo-PNG in de site zetten (nu nagemaakt in CSS)
 - Prijzen en perks checken in `bp_ranks`
 - Voorwaarden laten nakijken voordat de winkel live gaat
+- `og.png` (Discord-preview) opnieuw maken als er echte spelers in de top 3 staan

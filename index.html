@@ -6,6 +6,11 @@
 <title>Bounty Practice – KitPvP & Finals</title>
 <meta name="description" content="Bounty Practice: de KitPvP- en Finals-server van Bounty SMP. Bekijk je stats, de top 10 en steun de server met een rank.">
 <meta name="theme-color" content="#0e0a09">
+<meta property="og:title" content="Bounty Practice – KitPvP & Finals">
+<meta property="og:description" content="Check je stats, zie wie je moet inhalen en join de arena.">
+<meta property="og:image" content="https://fabiannnyt.github.io/bounty-practice/og.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -90,6 +95,15 @@
         </ul>
       </article>
     </div>
+
+    <div class="join">
+      <h3>In drie stappen in de arena</h3>
+      <ol>
+        <li><b>Kopieer het IP</b><span><button class="join-ip" type="button" data-copy-ip><span data-ip>play.bountypractice.nl</span></button></span></li>
+        <li><b>Voeg de server toe</b><span>Open Minecraft Java 26.2, ga naar Multiplayer en kies Server toevoegen.</span></li>
+        <li><b>Spring in een gat</b><span>Je komt in de lobby. Kies een gat, val erdoor en je zit in de arena.</span></li>
+      </ol>
+    </div>
   </section>
 
   <!-- Stats -->
@@ -122,6 +136,19 @@
   <section class="section" id="ranks">
     <h2>Ranks</h2>
     <p class="sub">Alleen cosmetisch, nooit pay-to-win. Een rank geldt 30 dagen en verlengt niet automatisch.</p>
+    <div class="preview">
+      <div class="preview-ctl">
+        <h3>Zo zie jij eruit</h3>
+        <p>Probeer een rank op je eigen naam.</p>
+        <label class="sr" for="pv-name">Minecraft-naam</label>
+        <input id="pv-name" data-pv-name maxlength="16" autocomplete="off" spellcheck="false" placeholder="Jouw naam">
+        <div class="pv-pick" data-pv-pick role="radiogroup" aria-label="Kies een rank"></div>
+      </div>
+      <div class="mc" aria-live="polite">
+        <div class="mc-tab"><img data-pv-head alt="" width="16" height="16"><span data-pv-tab></span></div>
+        <div class="mc-chat" data-pv-chat></div>
+      </div>
+    </div>
     <div class="ranks" data-ranks></div>
 
     <div class="media-strip">

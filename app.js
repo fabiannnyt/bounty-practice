@@ -126,7 +126,7 @@
   });
   $("[data-search]").addEventListener("submit", (e) => { e.preventDefault(); const n = input.value.trim(); if (n) goPlayer(n); });
 
-  async function showProfile(name) {
+  async function showProfile(name, vs) {
     const box = $("[data-profile]");
     input.value = name;
     $("[data-search-face]").src = head(name, 48);
@@ -147,7 +147,10 @@
     box.innerHTML = `
       <img class="profile-skin" src="${skin(p.name)}" alt="Skin van ${esc(p.name)}">
       <div>
-        <h3>${esc(p.name)}<span data-chip></span></h3>
+        <div class="profile-head">
+          <h3>${esc(p.name)}<span data-chip></span></h3>
+          <button class="share" type="button" data-share>Deel je stats</button>
+        </div>
         <p class="profile-meta">#${pos} van ${nf.format(players.length)} op punten${p.last_seen ? `, laatst online ${new Date(p.last_seen).toLocaleDateString("nl-NL", { day: "numeric", month: "long" })}` : ""}</p>
         <div class="stats">
           <div class="stat"><b>${nf.format(p.kills)}</b><span>Kills</span></div>
@@ -160,7 +163,15 @@
           <div class="stat"><b>${esc(p.favorite_kit || "–")}</b><span>Favoriete kit</span></div>
         </div>
         ${targetHtml(p, pos)}
+        ${badgesHtml(p)}
+        <form class="vs-form" data-vs-form>
+          <label for="vs-q">Vergelijk 1v1 met</label>
+          <input id="vs-q" name="vs" list="names" maxlength="16" autocomplete="off" spellcheck="false" placeholder="Minecraft-naam" value="${esc(vs || (pos > 1 ? players[pos - 2].name : players[1]?.name || ""))}">
+          <button type="submit">Vergelijk</button>
+        </form>
+        <div data-vs></div>
       </div>`;
+    if (vs) renderVs(p, vs);
     try {
       const r = await rpc("bp_active_rank", { p_mc_name: p.name });
       const rk = r?.[0] && ranks.find((x) => x.id === r[0].rank_id);
@@ -205,8 +216,91 @@
   }
 
   function route() {
-    const m = location.hash.match(/^#speler\/(.+)$/);
-    if (m && players.length) { showProfile(decodeURIComponent(m[1])); $("#stats").scrollIntoView(); }
+    const m = location.hash.match(/^#speler\/([^/]+)(?:\/vs\/([^/]+))?$/);
+    if (m && players.length) {
+      showProfile(decodeURIComponent(m[1]), m[2] && decodeURIComponent(m[2]));
+      (m[2] ? $("[data-profile]") : $("#stats")).scrollIntoView();
+    }
+  }
+
+  /* 1v1 vergelijken */
+  const VS = [
+    { k: "kills", l: "Kills" }, { k: "deaths", l: "Deaths", low: true }, { k: "kd", l: "K/D" },
+    { k: "best_streak", l: "Hoogste killstreak" }, { k: "finals_won", l: "Finals gewonnen" },
+    { k: "finals_played", l: "Finals gespeeld" }, { k: "points", l: "Punten" },
+  ];
+  const val = (p, k) => k === "kd" ? (p.deaths ? p.kills / p.deaths : p.kills) : p[k];
+  const fmt = (k, v) => k === "kd" ? v.toFixed(2).replace(".", ",") : nf.format(v);
+  function renderVs(a, name) {
+    const box = $("[data-vs]");
+    const b = players.find((x) => x.name.toLowerCase() === name.toLowerCase());
+    if (!b) { box.innerHTML = `<p class="vs-none">Geen stats voor <b>${esc(name)}</b>.</p>`; return; }
+    if (b.name === a.name) { box.innerHTML = `<p class="vs-none">Kies iemand anders dan jezelf.</p>`; return; }
+    let wa = 0, wb = 0;
+    const rows = VS.map((s) => {
+      const va = val(a, s.k), vb = val(b, s.k);
+      const aw = s.low ? va < vb : va > vb, bw = s.low ? vb < va : vb > va;
+      if (aw) wa++; if (bw) wb++;
+      const tot = va + vb || 1;
+      return `<div class="vs-row">
+        <b class="${aw ? "win" : ""}">${fmt(s.k, va)}</b>
+        <div class="vs-mid"><span>${s.l}</span><span class="vs-bar"><i class="${aw ? "win" : ""}" style="width:${(va / tot) * 100}%"></i><i class="${bw ? "win" : ""}" style="width:${(vb / tot) * 100}%"></i></span></div>
+        <b class="${bw ? "win" : ""}">${fmt(s.k, vb)}</b></div>`;
+    }).join("");
+    const verdict = wa === wb ? "Gelijkspel. Tijd voor een echte 1v1." : `${esc(wa > wb ? a.name : b.name)} wint ${Math.max(wa, wb)} van de ${VS.length} stats.`;
+    box.innerHTML = `<div class="vs">
+      <div class="vs-heads">
+        <span><img src="${head(a.name, 40)}" alt="" width="40" height="40">${esc(a.name)}</span>
+        <em>vs</em>
+        <span class="r">${esc(b.name)}<img src="${head(b.name, 40)}" alt="" width="40" height="40"></span>
+      </div>
+      ${rows}
+      <p class="vs-verdict">${verdict}</p>
+    </div>`;
+  }
+  $("[data-profile]").addEventListener("submit", (e) => {
+    if (!e.target.matches("[data-vs-form]")) return;
+    e.preventDefault();
+    const other = e.target.elements.vs.value.trim();
+    const me = $("[data-profile] h3").firstChild.textContent;
+    if (other) location.hash = `speler/${encodeURIComponent(me)}/vs/${encodeURIComponent(other)}`;
+  });
+
+  /* Delen */
+  $("[data-profile]").addEventListener("click", async (e) => {
+    if (!e.target.closest("[data-share]")) return;
+    const name = $("[data-profile] h3").firstChild.textContent;
+    const p = players.find((x) => x.name === name);
+    const pos = players.indexOf(p) + 1;
+    const url = `${location.origin}${location.pathname}#speler/${encodeURIComponent(name)}`;
+    const text = `Ik sta #${pos} op Bounty Practice met ${nf.format(p.kills)} kills en ${nf.format(p.points)} punten. Kun jij me inhalen?`;
+    if (navigator.share) { try { await navigator.share({ title: "Bounty Practice", text, url }); return; } catch { return; } }
+    try { await navigator.clipboard.writeText(`${text} ${url}`); } catch {}
+    toast("Link gekopieerd. Plak hem in Discord.");
+  });
+
+  /* Mijlpalen */
+  const BADGES = [
+    { n: "Eerste bloed", d: "1 kill", k: "kills", v: 1 },
+    { n: "Jager", d: "100 kills", k: "kills", v: 100 },
+    { n: "Bounty Hunter", d: "500 kills", k: "kills", v: 500 },
+    { n: "On fire", d: "Killstreak van 10", k: "best_streak", v: 10 },
+    { n: "Onstopbaar", d: "Killstreak van 25", k: "best_streak", v: 25 },
+    { n: "Finalist", d: "10 Finals gespeeld", k: "finals_played", v: 10 },
+    { n: "Kampioen", d: "Een Finals gewonnen", k: "finals_won", v: 1 },
+    { n: "Dynastie", d: "25 Finals gewonnen", k: "finals_won", v: 25 },
+  ];
+  function badgesHtml(p) {
+    const got = BADGES.filter((b) => p[b.k] >= b.v).length;
+    return `<div class="badges">
+      <p class="badges-h"><b>Mijlpalen</b><span>${got} van ${BADGES.length}</span></p>
+      <ul>${BADGES.map((b) => {
+        const ok = p[b.k] >= b.v;
+        const pct = Math.min(100, Math.round((p[b.k] / b.v) * 100));
+        return `<li class="${ok ? "ok" : ""}" title="${esc(b.d)}">
+          <b>${esc(b.n)}</b><span>${ok ? esc(b.d) : `${nf.format(p[b.k])} / ${nf.format(b.v)}`}</span>
+          ${ok ? "" : `<i style="width:${pct}%"></i>`}</li>`;
+      }).join("")}</ul></div>`;
   }
   addEventListener("hashchange", route);
 
@@ -222,12 +316,42 @@
         <ul>${r.perks.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
         <button class="buy" data-buy-id="${esc(r.id)}">Kies ${esc(r.name)}</button>
       </article>`).join("");
+    initPreview();
   }
+
+  /* Rank-preview: Minecraft-chat en tab met jouw naam */
+  let pvRank = "vip";
+  const pvName = $("[data-pv-name]");
+  function renderPreview() {
+    const r = ranks.find((x) => x.id === pvRank);
+    if (!r) return;
+    const n = validName(pvName.value.trim()) ? pvName.value.trim() : (localStorage.getItem("bp_me") || "Steve");
+    const pfx = `<span class="pfx" style="color:${esc(r.color)}">[${esc(r.name)}]</span>`;
+    const msgCol = ["vip", "hunter", "legende"].includes(r.id) ? `style="color:${esc(r.color)}"` : "";
+    $("[data-pv-head]").src = head(n, 16);
+    $("[data-pv-tab]").innerHTML = `${pfx} ${esc(n)}`;
+    $("[data-pv-chat]").innerHTML = `
+      <p><span class="sys">${esc(n)} is de arena in gesprongen</span></p>
+      <p>${pfx} ${esc(n)}: <span ${msgCol}>gg, wie durft een 1v1?</span></p>
+      <p><span class="sys gold">${esc(n)} heeft een killstreak van 5!</span></p>`;
+    $$("button", $("[data-pv-pick]")).forEach((b) => b.setAttribute("aria-checked", b.dataset.id === pvRank));
+  }
+  function initPreview() {
+    pvName.value = localStorage.getItem("bp_me") || "";
+    $("[data-pv-pick]").innerHTML = ranks.map((r) => `<button type="button" role="radio" data-id="${esc(r.id)}" style="--c:${esc(r.color)}">${esc(r.name)}</button>`).join("");
+    renderPreview();
+  }
+  $("[data-pv-pick]").addEventListener("click", (e) => { const b = e.target.closest("[data-id]"); if (b) { pvRank = b.dataset.id; renderPreview(); } });
+  pvName.addEventListener("input", renderPreview);
 
   /* Kopen */
   const dlg = $("[data-buy]"), bf = $("[data-buy-form]"), bmsg = $("[data-buy-msg]");
   let buying = null;
   const setMsg = (el, t, cls = "") => { el.textContent = t; el.className = `msg ${cls}`; };
+  $("[data-ranks]").addEventListener("mouseover", (e) => {
+    const c = e.target.closest(".rank"); const b = c && $("[data-buy-id]", c);
+    if (b && b.dataset.buyId !== pvRank) { pvRank = b.dataset.buyId; renderPreview(); }
+  });
   $("[data-ranks]").addEventListener("click", (e) => {
     const b = e.target.closest("[data-buy-id]");
     if (!b) return;
