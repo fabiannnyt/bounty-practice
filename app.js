@@ -36,14 +36,15 @@
   /* IP + Discord */
   $$("[data-ip]").forEach((el) => (el.textContent = C.serverIp));
   $$("[data-discord]").forEach((el) => (el.href = C.discord));
-  $$("[data-copy-ip]").forEach((b) => b.addEventListener("click", async () => {
+  document.addEventListener("click", async (e) => {
+    if (!e.target.closest("[data-copy-ip]")) return;
     try { await navigator.clipboard.writeText(C.serverIp); } catch {}
     const big = $(".ip");
     big.classList.add("copied");
     $("[data-ip-hint]").textContent = "Gekopieerd";
     toast(`${C.serverIp} gekopieerd. Plak het in Minecraft bij Multiplayer.`);
     setTimeout(() => { big.classList.remove("copied"); $("[data-ip-hint]").textContent = "Kopieer IP"; }, 2200);
-  }));
+  });
   fetch(`https://api.mcsrvstat.us/3/${encodeURIComponent(C.serverIp)}`).then((r) => r.json()).then((d) => {
     if (!d?.online) return;
     const el = $("[data-online]");
@@ -59,28 +60,63 @@
     { key: "points", label: "Punten" },
     { key: "best_streak", label: "Killstreak" },
     { key: "finals_won", label: "Finals gewonnen" },
+    { key: "kd", label: "K/D" },
     { key: "finals_played", label: "Finals gespeeld" },
-    { key: "deaths", label: "Deaths" },
   ];
+  const KD_MIN = 50;
+  const statVal = (p, k) => k === "kd" ? (p.deaths ? p.kills / p.deaths : p.kills) : p[k] || 0;
+  const statFmt = (k, v) => k === "kd" ? v.toFixed(2).replace(".", ",") : nf.format(v);
   const goPlayer = (n) => (location.hash = `speler/${encodeURIComponent(n)}`);
 
   async function loadPlayers() {
     players = await rest("bp_players?select=name,kills,deaths,best_streak,finals_played,finals_won,points,favorite_kit,last_seen&order=points.desc&limit=1000");
     $("#names").innerHTML = players.map((p) => `<option value="${esc(p.name)}">`).join("");
+    renderAll();
+    route();
+  }
+  function renderAll() {
     renderPodium();
     renderBoard();
     renderWelcome();
+    renderTotals();
+    renderToday();
+    renderKits();
+  }
+  function renderTotals() {
     const sum = (k) => players.reduce((t, p) => t + (p[k] || 0), 0);
-    $("[data-total-kills]").textContent = nf.format(sum("kills"));
-    $("[data-total-wins]").textContent = nf.format(sum("finals_won"));
-    route();
+    [["kills", "[data-total-kills]"], ["finals_won", "[data-total-wins]"]].forEach(([k, s]) => {
+      const n = sum(k);
+      $(s).textContent = nf.format(n);
+      $(s).closest(".mode-live").hidden = n < 1;
+    });
+  }
+  /* Vandaag gespeeld: werkt ook zonder online-check van de server */
+  function renderToday() {
+    const n = players.filter((p) => p.last_seen && Date.now() - new Date(p.last_seen) < 864e5).length;
+    const el = $("[data-today]");
+    el.hidden = n < 3;
+    el.textContent = `${nf.format(n)} spelers speelden vandaag ·`;
+  }
+  /* Meest gekozen kits (op basis van favoriete kit) */
+  function renderKits() {
+    const count = {};
+    players.forEach((p) => p.favorite_kit && (count[p.favorite_kit] = (count[p.favorite_kit] || 0) + 1));
+    const tot = Object.values(count).reduce((a, b) => a + b, 0);
+    const top = Object.entries(count).sort((a, b) => b[1] - a[1]).slice(0, 3);
+    const el = $("[data-kits]");
+    el.hidden = top.length < 2;
+    $("ol", el).innerHTML = top.map(([k, n]) => `<li><span>${esc(k)}</span><span class="trk"><i style="width:${Math.round((n / tot) * 100)}%"></i></span><b>${Math.round((n / tot) * 100)}%</b></li>`).join("");
   }
 
   /* Podium */
   function renderPodium() {
     const top = players.slice(0, 3);
     const el = $("[data-podium]");
-    if (!top.length) { $(".podium").hidden = true; return; }
+    $(".podium figcaption").hidden = !top.length;
+    if (!top.length) {
+      el.innerHTML = `<li class="podium-empty"><b>Het podium is nog leeg</b><span>De eerste drie spelers met punten staan hier. Dat kun jij zijn.</span><button type="button" class="btn" data-copy-ip>Kopieer IP en speel</button></li>`;
+      return;
+    }
     el.innerHTML = top.map((p, i) => `
       <li data-name="${esc(p.name)}" tabindex="0" aria-label="Plek ${i + 1}: ${esc(p.name)}, ${nf.format(p.points)} punten">
         <img class="skin" src="${skin(p.name)}" alt="">
@@ -102,14 +138,18 @@
   });
   function renderBoard() {
     const me = (localStorage.getItem("bp_me") || "").toLowerCase();
-    const list = [...players].filter((p) => p[stat] > 0).sort((a, b) => b[stat] - a[stat]).slice(0, 10);
-    $("[data-board]").innerHTML = list.length
-      ? list.map((p, i) => `<li data-name="${esc(p.name)}" tabindex="0" class="${p.name.toLowerCase() === me ? "me" : ""}">
+    const all = players.filter((p) => stat === "kd" ? p.kills >= KD_MIN : statVal(p, stat) > 0)
+      .sort((a, b) => statVal(b, stat) - statVal(a, stat));
+    const row = (p, i) => `<li data-name="${esc(p.name)}" tabindex="0" class="${p.name.toLowerCase() === me ? "me" : ""}">
           <span class="pos">${i + 1}</span>
           <img src="${head(p.name, 36)}" alt="" width="36" height="36" loading="lazy">
-          <span class="nm">${esc(p.name)}</span>
-          <span class="val">${nf.format(p[stat])}</span></li>`).join("")
-      : `<li class="empty">Nog geen scores. Speel een potje en claim de eerste plek.</li>`;
+          <span class="nm">${esc(p.name)}${p.name.toLowerCase() === me ? ` <small>jij</small>` : ""}</span>
+          <span class="val">${statFmt(stat, statVal(p, stat))}</span></li>`;
+    let html = all.slice(0, 10).map(row).join("");
+    const mi = all.findIndex((p) => p.name.toLowerCase() === me);
+    if (mi >= 10) html += `<li class="gap" aria-hidden="true">···</li>${row(all[mi], mi)}`;
+    $("[data-board]").innerHTML = html || `<li class="empty">Nog geen scores. Speel een potje en claim de eerste plek.</li>`;
+    $("[data-board-note]").textContent = stat === "kd" ? `Alleen spelers met minimaal ${KD_MIN} kills.` : "";
   }
   const board = $("[data-board]");
   board.addEventListener("click", (e) => { const li = e.target.closest("[data-name]"); if (li) goPlayer(li.dataset.name); });
@@ -124,7 +164,33 @@
     clearTimeout(faceT);
     faceT = setTimeout(() => { const n = input.value.trim(); $("[data-search-face]").src = head(validName(n) ? n : "MHF_Steve", 48); }, 300);
   });
-  $("[data-search]").addEventListener("submit", (e) => { e.preventDefault(); const n = input.value.trim(); if (n) goPlayer(n); });
+  const sug = $("[data-suggest]");
+  let sugIdx = -1, sugList = [];
+  function renderSug() {
+    const q = input.value.trim().toLowerCase();
+    sugList = q ? players.filter((p) => p.name.toLowerCase().includes(q))
+      .sort((a, b) => (b.name.toLowerCase().startsWith(q) - a.name.toLowerCase().startsWith(q)) || b.points - a.points).slice(0, 6) : [];
+    sugIdx = -1;
+    sug.innerHTML = sugList.map((p, i) => `<li role="option" id="sug-${i}" data-name="${esc(p.name)}">
+      <img src="${head(p.name, 28)}" alt="" width="28" height="28"><span>${esc(p.name)}</span><small>#${players.indexOf(p) + 1} · ${nf.format(p.points)} punten</small></li>`).join("");
+    sug.hidden = !sugList.length;
+    input.setAttribute("aria-expanded", !sug.hidden);
+  }
+  input.addEventListener("input", renderSug);
+  input.addEventListener("keydown", (e) => {
+    if (sug.hidden) return;
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault();
+      sugIdx = (sugIdx + (e.key === "ArrowDown" ? 1 : -1) + sugList.length) % sugList.length;
+      $$("li", sug).forEach((li, i) => li.setAttribute("aria-selected", i === sugIdx));
+      input.setAttribute("aria-activedescendant", `sug-${sugIdx}`);
+    } else if (e.key === "Enter" && sugIdx >= 0) {
+      e.preventDefault(); sug.hidden = true; goPlayer(sugList[sugIdx].name);
+    } else if (e.key === "Escape") sug.hidden = true;
+  });
+  sug.addEventListener("mousedown", (e) => { const li = e.target.closest("[data-name]"); if (li) { e.preventDefault(); sug.hidden = true; goPlayer(li.dataset.name); } });
+  input.addEventListener("blur", () => setTimeout(() => (sug.hidden = true), 100));
+  $("[data-search]").addEventListener("submit", (e) => { e.preventDefault(); sug.hidden = true; const n = input.value.trim(); if (n) goPlayer(n); });
 
   async function showProfile(name, vs) {
     const box = $("[data-profile]");
@@ -175,7 +241,17 @@
     try {
       const r = await rpc("bp_active_rank", { p_mc_name: p.name });
       const rk = r?.[0] && ranks.find((x) => x.id === r[0].rank_id);
-      if (rk) { const c = $("[data-chip]", box); c.className = "chip"; c.style.background = rk.color; c.textContent = rk.name; }
+      if (rk) {
+        const c = $("[data-chip]", box); c.className = "chip"; c.style.background = rk.color; c.textContent = rk.name;
+        const end = new Date(r[0].expires_at);
+        const days = Math.max(0, Math.ceil((end - Date.now()) / 864e5));
+        const st = document.createElement("div");
+        st.className = `rank-status${days <= 7 ? " soon" : ""}`;
+        st.style.setProperty("--c", rk.color);
+        st.innerHTML = `<span><b>${esc(rk.name)} actief</b> tot ${end.toLocaleDateString("nl-NL", { day: "numeric", month: "long" })}, nog ${days} ${days === 1 ? "dag" : "dagen"}.${days <= 7 ? " Verleng op tijd, hij loopt niet vanzelf door." : ""}</span>
+          ${rk.purchasable ? `<button type="button" data-extend="${esc(rk.id)}">Verleng 30 dagen</button>` : ""}`;
+        $(".stats", box).before(st);
+      }
     } catch {}
   }
   /* Doelwit: de speler net boven je op punten. Geeft elke speler een concreet doel. */
@@ -222,6 +298,11 @@
       (m[2] ? $("[data-profile]") : $("#stats")).scrollIntoView();
     }
   }
+
+  $("[data-profile]").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-extend]");
+    if (b) openBuy(b.dataset.extend, $("[data-profile] h3").firstChild.textContent);
+  });
 
   /* 1v1 vergelijken */
   const VS = [
@@ -308,8 +389,7 @@
   async function loadRanks() {
     ranks = await rest("bp_ranks?select=*&order=sort");
     $("[data-ranks]").innerHTML = ranks.filter((r) => r.purchasable).map((r) => `
-      <article class="rank ${r.id === "vip" ? "pop" : ""}" style="--c:${esc(r.color)}">
-        ${r.id === "vip" ? `<span class="badge">Populair</span>` : ""}
+      <article class="rank" style="--c:${esc(r.color)}">
         <span class="tag">[${esc(r.name)}]</span>
         <p class="price">${euro(r.price_cents)}</p>
         <span class="per">per 30 dagen</span>
@@ -354,18 +434,32 @@
   });
   $("[data-ranks]").addEventListener("click", (e) => {
     const b = e.target.closest("[data-buy-id]");
-    if (!b) return;
-    buying = ranks.find((r) => r.id === b.dataset.buyId);
+    if (b) openBuy(b.dataset.buyId);
+  });
+  const mcLabel = $("[data-mc-label]");
+  function setGift(gift) {
+    $$("[data-for]", bf).forEach((x) => x.setAttribute("aria-checked", (x.dataset.for === "gift") === gift));
+    mcLabel.textContent = gift ? "Minecraft-naam van je vriend" : "Jouw Minecraft-naam";
+    $("[data-gift-note]").hidden = !gift;
+    const mc = bf.elements.mc;
+    mc.value = gift ? "" : localStorage.getItem("bp_me") || "";
+    mc.dispatchEvent(new Event("input"));
+    if (gift) mc.focus();
+  }
+  $("[data-for-pick]").addEventListener("click", (e) => { const x = e.target.closest("[data-for]"); if (x) setGift(x.dataset.for === "gift"); });
+  function openBuy(id, forName) {
+    buying = ranks.find((r) => r.id === id);
+    if (!buying) return;
     bf.style.setProperty("--c", buying.color);
     $("[data-buy-rank]").textContent = buying.name;
     $("[data-buy-price]").textContent = `${euro(buying.price_cents)} voor 30 dagen`;
     $("[data-buy-go]").textContent = `Betaal ${euro(buying.price_cents)}`;
     setMsg(bmsg, "");
-    const mc = bf.elements.mc;
-    if (!mc.value) mc.value = localStorage.getItem("bp_me") || "";
-    $("[data-buy-face]").src = head(validName(mc.value) ? mc.value : "MHF_Steve", 36);
+    setGift(false);
+    if (forName) bf.elements.mc.value = forName;
+    $("[data-buy-face]").src = head(validName(bf.elements.mc.value) ? bf.elements.mc.value : "MHF_Steve", 36);
     dlg.showModal();
-  });
+  }
   bf.elements.mc.addEventListener("input", (e) => { const n = e.target.value.trim(); $("[data-buy-face]").src = head(validName(n) ? n : "MHF_Steve", 36); });
   bf.addEventListener("submit", async (e) => {
     if (e.submitter?.value !== "pay") return;
@@ -408,6 +502,22 @@
     } catch (err) { setMsg(mmsg, err.message, "bad"); }
     btn.disabled = false;
   });
+
+  // Elke minuut nieuwe stats ophalen, zonder dat een open profiel verspringt
+  setInterval(async () => {
+    if (document.hidden) return;
+    try {
+      players = await rest("bp_players?select=name,kills,deaths,best_streak,finals_played,finals_won,points,favorite_kit,last_seen&order=points.desc&limit=1000");
+      renderAll();
+    } catch {}
+  }, 60000);
+
+  /* Tabbalk: laat zien in welke sectie je bent */
+  const tabLinks = $$(".tabbar a");
+  const io = new IntersectionObserver((es) => es.forEach((en) => {
+    if (en.isIntersecting) tabLinks.forEach((l) => l.classList.toggle("on", l.getAttribute("href") === `#${en.target.id}`));
+  }), { rootMargin: "-45% 0px -50% 0px" });
+  ["spelen", "stats", "top10", "ranks"].forEach((id) => io.observe(document.getElementById(id)));
 
   Promise.all([loadRanks(), loadPlayers()]).catch(() => {
     $("[data-board]").innerHTML = `<li class="empty">Stats laden lukt nu even niet. Ververs de pagina over een minuut.</li>`;

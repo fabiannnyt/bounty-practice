@@ -54,7 +54,7 @@
         </button>
         <a class="link-discord" data-discord href="#" target="_blank" rel="noopener">Join de Discord</a>
       </div>
-      <p class="meta"><span class="online" data-online hidden><i></i><span></span> ·</span> Java Edition 26.2</p>
+      <p class="meta"><span class="online" data-online hidden><i></i><span></span> ·</span> <span data-today hidden></span> Java Edition 26.2</p>
     </div>
 
     <figure class="podium" aria-label="Top 3 op punten">
@@ -80,6 +80,10 @@
           <li><b>Jouw indeling</b><span>Zet je items één keer goed in de layout-shulker, de rest van de tijd liggen ze daar.</span></li>
           <li><b>Killstreaks</b><span>Bonuspunten bij 3, 5, 7 en 10 kills op rij, en extra voor wie een streak breekt.</span></li>
         </ul>
+        <div class="kits" data-kits hidden>
+          <p>Favoriete kits van de spelers</p>
+          <ol></ol>
+        </div>
       </article>
       <article class="mode mode-fin">
         <div class="mode-top">
@@ -113,9 +117,10 @@
     <form class="search" data-search role="search">
       <label class="sr" for="q">Minecraft-naam</label>
       <img class="search-face" data-search-face src="https://mc-heads.net/avatar/MHF_Steve/48" alt="" width="36" height="36">
-      <input id="q" name="q" autocomplete="off" spellcheck="false" maxlength="16" placeholder="Minecraft-naam" list="names">
+      <input id="q" name="q" autocomplete="off" spellcheck="false" maxlength="16" placeholder="Minecraft-naam" role="combobox" aria-controls="suggest" aria-expanded="false" aria-autocomplete="list">
       <datalist id="names"></datalist>
       <button type="submit">Zoeken</button>
+      <ul class="suggest" id="suggest" role="listbox" data-suggest hidden></ul>
     </form>
     <div class="profile" data-profile hidden></div>
   </section>
@@ -130,6 +135,7 @@
       <div class="seg" role="tablist" aria-label="Kies een stat" data-tabs></div>
     </div>
     <ol class="board" data-board aria-live="polite"></ol>
+    <p class="board-note" data-board-note></p>
   </section>
 
   <!-- Ranks -->
@@ -168,6 +174,13 @@
   <span><a data-discord href="#" target="_blank" rel="noopener">Discord</a><a href="voorwaarden.html">Voorwaarden</a></span>
 </footer>
 
+<nav class="tabbar" aria-label="Snel naar">
+  <a href="#spelen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l12 8-12 8z"/></svg>Spelen</a>
+  <a href="#stats"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>Stats</a>
+  <a href="#top10"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V11M10 20V5M16 20v-6M22 20H2"/></svg>Top 10</a>
+  <a href="#ranks"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l4 4 5-7 5 7 4-4-2 11H5z"/></svg>Ranks</a>
+</nav>
+
 <div class="toast" data-toast role="status" aria-live="polite"></div>
 
 <!-- Kopen -->
@@ -176,12 +189,17 @@
     <button class="x" value="cancel" aria-label="Sluiten" formnovalidate>×</button>
     <p class="sheet-kicker" data-buy-price></p>
     <h2 class="sheet-title" data-buy-rank></h2>
-    <label class="field">Minecraft-naam
+    <div class="for-pick" data-for-pick role="radiogroup" aria-label="Voor wie">
+      <button type="button" role="radio" data-for="me" aria-checked="true">Voor mezelf</button>
+      <button type="button" role="radio" data-for="gift" aria-checked="false">Cadeau voor een vriend</button>
+    </div>
+    <label class="field"><span data-mc-label>Jouw Minecraft-naam</span>
       <span class="field-row">
         <img data-buy-face alt="" width="36" height="36">
         <input name="mc" required maxlength="16" pattern="[A-Za-z0-9_]{3,16}" autocomplete="off" spellcheck="false" placeholder="Op deze naam komt de rank">
       </span>
     </label>
+    <p class="gift-note" data-gift-note hidden>De rank komt direct op de naam van je vriend. Check de spelling goed.</p>
     <label class="check"><input type="checkbox" name="ok" required> Ik ga akkoord met de <a href="voorwaarden.html" target="_blank">voorwaarden</a></label>
     <button class="btn" type="submit" value="pay" data-buy-go>Betalen</button>
     <p class="msg" data-buy-msg role="status"></p>
