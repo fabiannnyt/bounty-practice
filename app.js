@@ -70,6 +70,9 @@
     renderPodium();
     renderBoard();
     renderWelcome();
+    const sum = (k) => players.reduce((t, p) => t + (p[k] || 0), 0);
+    $("[data-total-kills]").textContent = nf.format(sum("kills"));
+    $("[data-total-wins]").textContent = nf.format(sum("finals_won"));
     route();
   }
 
